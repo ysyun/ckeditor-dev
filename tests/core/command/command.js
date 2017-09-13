@@ -302,5 +302,27 @@ bender.test( {
 		editor._.elementsPath.onClick( 0 );
 
 		wait();
+	},
+
+	// #678
+	'test execCommand without toolbar plugin': function() {
+		bender.editorBot.create( {
+			name: 'test_editor_notoolbar',
+			config: {
+				plugins: 'wysiwygarea,link'
+			}
+		}, function( bot ) {
+			var editor = bot.editor;
+
+			editor.once( 'dialogShow', function( evt ) {
+				var dialog = evt.data;
+
+				if ( dialog._.name === 'link' ) {
+					dialog.hide();
+				}
+			} );
+
+			assert.isTrue( bot.editor.execCommand( 'link' ) );
+		} );
 	}
 } );
