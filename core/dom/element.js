@@ -1518,7 +1518,7 @@ CKEDITOR.dom.element.clearMarkers = function( database, element, removeFromDatab
 
 				// https://dev.ckeditor.com/ticket/12747.
 				if ( needAdjustScrollAndBorders ) {
-					var scrollRelative = this.getDocumentScroll();
+					var scrollRelative = this.getDocumentScrollPosition();
 
 					x = box.left + scrollRelative.scrollLeft - clientLeft;
 					y = box.top + scrollRelative.scrollTop - clientTop;
@@ -2089,14 +2089,13 @@ CKEDITOR.dom.element.clearMarkers = function( database, element, removeFromDatab
 		 * Returns scroll position of the element's document.
 		 *
 		 * @since 4.8.0
-		 * @param {Boolean} [onlyScrollTop] If set to `true` returns only scrollTop value
 		 * @returns {Object/Number} Object with keys: `scrollTop` and `scrollLeft`, or Number represent scrollTop
 		 */
-		getDocumentScroll: function( onlyScrollTop ) {
+		getDocumentScrollPosition: function() {
 			var doc = this.getDocument(),
 				scrollingElement = doc.getScrollingElement();
 
-			return onlyScrollTop ? scrollingElement.$.scrollTop : { 'scrollTop': scrollingElement.$.scrollTop, 'scrollLeft': scrollingElement.$.scrollLeft };
+			return { 'scrollTop': scrollingElement.$.scrollTop, 'scrollLeft': scrollingElement.$.scrollLeft };
 		},
 
 		/**
@@ -2106,7 +2105,7 @@ CKEDITOR.dom.element.clearMarkers = function( database, element, removeFromDatab
 		 * @param {Number} scrollTop number of pixels that an element's document is scrolled vertically.
 		 * @param {Number} [scrollLeft] number of pixels that an element's document is scrolled horizontally.
 		 */
-		setDocumentScroll: function( scrollTop, scrollLeft ) {
+		setDocumentScrollPosition: function( scrollTop, scrollLeft ) {
 			var doc = this.getDocument(),
 				scrollingElement = doc.getScrollingElement();
 
@@ -2118,11 +2117,10 @@ CKEDITOR.dom.element.clearMarkers = function( database, element, removeFromDatab
 		 * Returns scroll position of the element itself.
 		 *
 		 * @since 4.8.0
-		 * @param {Boolean} [onlyScrollTop] If set to `true` returns only scrollTop value
 		 * @returns {Object} Object with keys: `scrollTop` and `scrollLeft`
 		 */
-		getScroll: function( onlyScrollTop ) {
-			return onlyScrollTop ? this.$.scrollTop : { 'scrollTop': this.$.scrollTop, 'scrollLeft': this.$.scrollLeft };
+		getScrollPosition: function() {
+			return { 'scrollTop': this.$.scrollTop, 'scrollLeft': this.$.scrollLeft };
 		},
 
 		/**
@@ -2132,7 +2130,7 @@ CKEDITOR.dom.element.clearMarkers = function( database, element, removeFromDatab
 		 * @param {Number} scrollTop number of pixels that an element's contentt is scrolled vertically.
 		 * @param {Number} [scrollLeft] number of pixels that an element's contentt is scrolled horizontally.
 		 */
-		setScroll: function( scrollTop, scrollLeft ) {
+		setScrollPosition: function( scrollTop, scrollLeft ) {
 			this.$.scrollTop = scrollTop;
 			this.$.scrollLeft = scrollLeft !== undefined ? scrollLeft : this.$.scrollLeft;
 		}
