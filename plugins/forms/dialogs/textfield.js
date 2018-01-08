@@ -178,7 +178,7 @@ CKEDITOR.dialog.add( 'textfield', function( editor ) {
 				accessKey: 'Q',
 				value: 'required',
 				setup: function( element ) {
-					this.setValue( element.getAttribute( 'required' ) );
+					this.setValue( element.getAttribute( 'required' ) === null ? null : 'required' );
 				},
 				commit: function( data ) {
 					var element = data.element;

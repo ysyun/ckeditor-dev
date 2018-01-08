@@ -114,7 +114,7 @@ CKEDITOR.dialog.add( 'textarea', function( editor ) {
 				accessKey: 'Q',
 				value: 'required',
 				setup: function( element ) {
-					this.setValue( element.getAttribute( 'required' ) );
+					this.setValue( element.getAttribute( 'required' ) === null ? null : 'required' );
 				},
 				commit: function( element ) {
 					if ( this.getValue() )

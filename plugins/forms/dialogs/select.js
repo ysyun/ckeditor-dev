@@ -491,7 +491,7 @@ CKEDITOR.dialog.add( 'select', function( editor ) {
 						value: 'checked',
 						setup: function( name, element ) {
 							if ( name == 'select' )
-								this.setValue( element.getAttribute( 'required' ) );
+								this.setValue( element.getAttribute( 'required' ) === null ? null : 'required' );
 						},
 						commit: function( element ) {
 							if ( this.getValue() )
