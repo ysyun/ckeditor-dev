@@ -16,6 +16,7 @@ Fixed Issues:
 * [#889](https://github.com/ckeditor/ckeditor-dev/issues/889): Fixed: Unclear error message for width and height fields in [Image](https://ckeditor.com/cke4/addon/image) and [Enhanced Image](https://ckeditor.com/cke4/addon/image2) plugins.
 * [#859](https://github.com/ckeditor/ckeditor-dev/issues/859): Fixed: Can't edit link after double click on text in link.
 * [#1013](https://github.com/ckeditor/ckeditor-dev/issues/1013): Fixed: [Paste from Word](https://ckeditor.com/cke4/addon/pastefromword) does not work correctly with [`config.forcePasteAsPlainText`](https://docs.ckeditor.com/ckeditor4/docs/#!/api/CKEDITOR.config-cfg-forcePasteAsPlainText) property.
+* [#898](https://github.com/ckeditor/ckeditor-dev/issues/898): Fixed: Long image alt text protrudes into editor when image is selected.
 
 ## CKEditor 4.8
 
