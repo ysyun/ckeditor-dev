@@ -9,6 +9,7 @@ New Features:
 * [#933](https://github.com/ckeditor/ckeditor-dev/issues/933): [File Browser](https://ckeditor.com/cke4/addon/filetools) plugin can now upload files using XHR requests. This allows for setting custom HTTP headers using [`config.fileTools_requestHeaders`](http://docs.ckeditor.test/#!/api/CKEDITOR.config-cfg-fileTools_requestHeaders) configuration option.
 * [#1399](https://github.com/ckeditor/ckeditor-dev/issues/1399): Added possibility to set [`CKEDITOR.config.startupFocus`](https://docs.ckeditor.com/ckeditor4/docs/#!/api/CKEDITOR.config-cfg-startupFocus) as `start` or `end` to specify where editor focus should be after initialization.
 * [#1441](https://github.com/ckeditor/ckeditor-dev/issues/1441): [Magic Line](https://ckeditor.com/cke4/addon/magicline) line element can now be identified by `data-cke-magic-line="1"` attribute.
+* [#1493](https://github.com/ckeditor/ckeditor-dev/issues/1493): [Upload Image](https://ckeditor.com/cke4/addon/uploadimage) selection is preserved after images upload.
 
 Fixed Issues:
 
@@ -24,6 +25,7 @@ Fixed Issues:
 * [#1356](https://github.com/ckeditor/ckeditor-dev/issues/1356): Fixed: [Border parse function](https://docs.ckeditor.com/ckeditor4/docs/#!/api/CKEDITOR.tools.style.parse-method-border) should allow spaces in the color value.
 * [#1426](https://github.com/ckeditor/ckeditor-dev/issues/1426): [IE8-9] Fixed: Missing balloon toolbar background in Kama skin. Thanks to [Christian Elmer](https://github.com/keinkurt)!
 * [#1010](https://github.com/ckeditor/ckeditor-dev/issues/1010): Fixed: CSS `border` shorthand property was incorrectly expanded ignoring `border-color` style.
+* [#1217](https://github.com/ckeditor/ckeditor-dev/issues/1217): [Chrome] Fixed: [Upload Image](https://ckeditor.com/cke4/addon/uploadimage) exception thrown when pasting multiple images into an empty editable.
 
 API Changes:
 
