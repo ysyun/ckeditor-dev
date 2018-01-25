@@ -9,6 +9,7 @@ New Features:
 * [#933](https://github.com/ckeditor/ckeditor-dev/issues/933): [File Browser](https://ckeditor.com/cke4/addon/filetools) plugin can now upload files using XHR requests. This allows for setting custom HTTP headers using [`config.fileTools_requestHeaders`](http://docs.ckeditor.test/#!/api/CKEDITOR.config-cfg-fileTools_requestHeaders) configuration option.
 * [#1399](https://github.com/ckeditor/ckeditor-dev/issues/1399): Added possibility to set [`CKEDITOR.config.startupFocus`](https://docs.ckeditor.com/ckeditor4/docs/#!/api/CKEDITOR.config-cfg-startupFocus) as `start` or `end` to specify where editor focus should be after initialization.
 * [#1441](https://github.com/ckeditor/ckeditor-dev/issues/1441): [Magic Line](https://ckeditor.com/cke4/addon/magicline) line element can now be identified by `data-cke-magic-line="1"` attribute.
+* [#1498](https://github.com/ckeditor/ckeditor-dev/issues/1498) : Added new method 'getClientRects()' to CKEDITOR.dom.range, which returns list of rects for each selected element.
 
 Fixed Issues:
 
