@@ -972,7 +972,7 @@
 						i;
 
 					// Handle only left/right/del/bspace keys.
-					if ( !keystrokes[ keystroke ] ) {
+					if ( !keystrokes[ keystroke ] || editor.readOnly ) {
 						return;
 					}
 
@@ -1021,6 +1021,10 @@
 					ranges,
 					firstCell,
 					i;
+
+				if ( editor.readOnly ) {
+					return;
+				}
 
 				// We must check if the event really did not produce any character as it's fired for all keys in Gecko.
 				if ( !selection || !selection.isInTable() || !selection.isFake || !isCharKey ||
