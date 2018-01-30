@@ -25,6 +25,7 @@ Fixed Issues:
 * [#1426](https://github.com/ckeditor/ckeditor-dev/issues/1426): [IE8-9] Fixed: Missing balloon toolbar background in Kama skin. Thanks to [Christian Elmer](https://github.com/keinkurt)!
 * [#1010](https://github.com/ckeditor/ckeditor-dev/issues/1010): Fixed: CSS `border` shorthand property was incorrectly expanded ignoring `border-color` style.
 * [#1516](https://github.com/ckeditor/ckeditor-dev/issues/1516): Fixed: Selection allows for removing in a readonly mode using `backspace/delete` keys.
+* [#1489](https://github.com/ckeditor/ckeditor-dev/issues/1489): Fixed: [tableselection](https://docs.ckeditor.com/ckeditor4/latest/api/CKEDITOR_plugins_tableselection.html) table contents can be removed in readonly mode.
 
 API Changes:
 
