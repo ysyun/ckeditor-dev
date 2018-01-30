@@ -145,6 +145,24 @@
 			mockMouseSelection( editor, [ cells.getItem( 1 ), cells.getItem( 3 ), cells.getItem( 8 ) ], function() {
 				assert.pass();
 			} );
+		},
+
+		'test delete/backspace keys are not removing readonly selection': function( editor ) {
+			var selection = editor.getSelection(),
+				editable = editor.editable(),
+				table = CKEDITOR.document.getById( 'simpleTable' ).getHtml();
+
+			editor.setReadOnly( true );
+
+			bender.tools.setHtmlWithSelection( editor, table );
+
+			var row = editor.editable().findOne( 'tr' );
+			selection.selectElement( row );
+
+			editable.fire( 'keydown', new CKEDITOR.dom.event( { keyCode: 8 } ) ); // backspace
+			editable.fire( 'keydown', new CKEDITOR.dom.event( { keyCode: 46 } ) ); // delete
+
+			assert.areSame( bender.tools.compatHtml( table ), editor.getData(), 'Editor data' );
 		}
 	};
 
