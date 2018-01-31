@@ -554,11 +554,18 @@
 						} );
 					}
 
-					if ( focused && hasWidgetFeature( focused, 'caption' ) ) {
-						focused._refreshCaption( sender );
+					// In Firefox and Edge applying styles inside caption results
+					// in firing this listener without focused widget.
+					// However it could be obtained from element, on which the event took place.
+					if ( editor.focusManager.hasFocus && sender && !focused ) {
+						focused = editor.widgets.getByElement( sender );
 					}
 
-					if ( previous && hasWidgetFeature( previous, 'caption' ) ) {
+					if ( focused && hasWidgetFeature( focused, 'caption' ) ) {
+						focused._refreshCaption( sender, true );
+					}
+
+					if ( previous && hasWidgetFeature( previous, 'caption' ) && previous !== focused ) {
 						previous._refreshCaption( sender );
 					}
 				}
@@ -586,11 +593,17 @@
 			 * @private
 			 * @member CKEDITOR.plugins.imagebase.featuresDefinitions.caption
 			 * @param {CKEDITOR.dom.element} sender The element that this function should be called on.
+			 * @param {Boolean} [isFocused] Indicates if current widget should be treated as a focused one.
+			 * If this parameter is omitted, its value is determined by checking
+			 * {@link CKEDITOR.plugins.widget.repository#focused} value.
 			 */
-			_refreshCaption: function( sender ) {
-				var isFocused = getFocusedWidget( this.editor ) === this,
-					caption = this.parts.caption,
+			_refreshCaption: function( sender, isFocused ) {
+				var caption = this.parts.caption,
 					editable = this.editables.caption;
+
+				if ( typeof isFocused !== 'boolean' ) {
+					isFocused = getFocusedWidget( this.editor ) === this;
+				}
 
 				function isInCaption( element ) {
 					return element.equals( caption ) || caption.contains( element );
