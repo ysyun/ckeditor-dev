@@ -32,6 +32,7 @@ Fixed Issues:
 * [#1516](https://github.com/ckeditor/ckeditor-dev/issues/1516): Fixed: Fake selection allows removing in a readonly mode using `Backspace`/`Delete` keys.
 * [#1570](https://github.com/ckeditor/ckeditor-dev/issues/1570): Fixed: Fake selection allows cutting in a readonly mode using `Ctrl`/`Cmd` + `X` keys.
 * [#1363](https://github.com/ckeditor/ckeditor-dev/issues/1363): Fixed: Paste notification isn't very straightforward and it might confuse users.
+* [#1451](https://github.com/ckeditor/ckeditor-dev/issues/1451): Fixed: Context menu is incorrectly positioned when opened with `Shift-F10`.
 
 API Changes:
 
