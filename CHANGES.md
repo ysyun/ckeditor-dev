@@ -1,6 +1,12 @@
 ﻿CKEditor 4 Changelog
 ====================
 
+## CKEditor 4.10
+
+New Features:
+
+* [#1558](https://github.com/ckeditor/ckeditor-dev/issues/1558): Added possibility to open dialogs inside [Balloon Toolbar](https://ckeditor.com/cke4/addon/balloontoolbar).
+
 ## CKEditor 4.9
 
 New Features:
