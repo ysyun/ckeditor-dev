@@ -1,6 +1,12 @@
 ﻿CKEditor 4 Changelog
 ====================
 
+## CKEditor 4.10
+
+New Features:
+
+* [#1674](https://github.com/ckeditor/ckeditor-dev/issues/1674): The [Widget](https://ckeditor.com/cke4/addon/widget) plugin accepts inline styles and HTML attributes from [`CKEDITOR.style.customHandlers.widget`](https://docs.ckeditor.com/ckeditor4/latest/api/CKEDITOR_style_customHandlers_widget.html).
+
 ## CKEditor 4.9
 
 New Features:
