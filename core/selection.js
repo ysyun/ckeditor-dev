@@ -239,11 +239,18 @@
 			// If real (not locked/stored) selection was moved from hidden container
 			// or is not a table one, then the fake-selection must be invalidated.
 			if ( !realSel || ( !realSel.isHidden() && !isRealTableSelection( realSel, sel ) ) ) {
-				// Remove the cache from fake-selection references in use elsewhere.
-				sel.reset();
+				if ( CKEDITOR.env.edge && isWidget( sel.getStartElement() ) ) {
+					// Edge remove native selection from hidden element we need to restore it for widget.
+					var selectedWidget = this.widgets.getByElement( sel.getStartElement() ).wrapper;
+					sel.reset();
+					realSel.fake( selectedWidget );
+				} else {
+					// Remove the cache from fake-selection references in use elsewhere.
+					sel.reset();
 
-				// Have the code using the native selection.
-				sel = 0;
+					// Have the code using the native selection.
+					sel = 0;
+				}
 			}
 		}
 
