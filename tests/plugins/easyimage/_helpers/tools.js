@@ -4,11 +4,6 @@
 var easyImageTools = ( function() {
 	'use strict';
 
-	// Force Edge to run every test in new CKEditor's instance.
-	function createTestsForEditors( editors, tests ) {
-		return bender.tools.createTestsForEditors( editors, tests, CKEDITOR.env.edge );
-	}
-
 	function assertCommandsState( editor, asserts ) {
 		var command;
 
@@ -74,7 +69,6 @@ var easyImageTools = ( function() {
 
 	return {
 		CLOUD_SERVICES_UPLOAD_GATEWAY: 'https://files.cke-cs.com/upload/',
-		createTestsForEditors: createTestsForEditors,
 		assertCommandsState: assertCommandsState,
 		assertMenuItemsState: assertMenuItemsState,
 		isUnsupportedEnvironment: isUnsupportedEnvironment,
