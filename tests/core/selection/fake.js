@@ -1,12 +1,20 @@
 /* bender-tags: editor */
 /* bender-ckeditor-plugins: basicstyles,undo,sourcearea,toolbar */
 
-bender.editor = {
-	config: {
-		extraAllowedContent: 'p span em ul li[id,contenteditable]',
-		// They make HTML comparison different in build and dev modes.
-		removePlugins: 'htmlwriter,entities',
-		extraPlugins: 'placeholder'
+bender.editors = {
+	classic: {
+		config: {
+			extraAllowedContent: 'p span em ul li[id,contenteditable]',
+			// They make HTML comparison different in build and dev modes.
+			removePlugins: 'htmlwriter,entities',
+			extraPlugins: 'placeholder'
+		}
+	},
+	divarea: {
+		config: {
+			extraAllowedContent: 'p[contenteditable]',
+			extraPlugins: 'placeholder,divarea'
+		}
 	}
 };
 
@@ -76,11 +84,13 @@ function getKeyEvent( keyCode, preventDefaultCallback ) {
 
 bender.test( {
 	tearDown: function() {
-		this.editor.setReadOnly( false );
+		if ( this.editors.classic.readOnly ) {
+			this.editors.classic.setReadOnly( false );
+		}
 	},
 
 	'Make fake-selection': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
 		bender.tools.setHtmlWithSelection( editor, '<p>[foo <span id="bar">bar</span>]</p>' );
 
@@ -112,7 +122,7 @@ bender.test( {
 	},
 
 	'Reset fake-selection': function() {
-		var editor = this.editor,
+		var editor = this.editors.classic,
 			inputHtml = '<p>{foo <span id="bar">bar</span>}</p>';
 
 		// Edge behaves very weird if there's element selection inside paragraph in this test.
@@ -137,7 +147,7 @@ bender.test( {
 	},
 
 	'Fire selectionchange event': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
 		bender.tools.setHtmlWithSelection( editor, '<p>[foo <span id="bar">bar</span>]</p>' );
 
@@ -162,7 +172,7 @@ bender.test( {
 	},
 
 	'Change selection': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
 		bender.tools.setHtmlWithSelection( editor, '<p>[foo <span id="bar">bar</span></p><p id="bom">bom]</p>' );
 
@@ -193,7 +203,7 @@ bender.test( {
 	},
 
 	'Hiding selection': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
 		bender.tools.setHtmlWithSelection( editor, '<p>[foo <span id="bar">bar</span> <span id="bom">bom</span>]</p>' );
 
@@ -211,7 +221,7 @@ bender.test( {
 	},
 
 	'Clean up on setData in framed editor': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
 		bender.tools.setHtmlWithSelection( editor, '<p>[foo <span id="bar">bar</span>]</p>' );
 
@@ -219,7 +229,7 @@ bender.test( {
 
 		assert.areSame( '<p>foo <span id="bar">bar</span></p>', editor.getData() );
 
-		this.editorBot.setData( '<p>foo!</p>', function() {
+		this.editorBots.classic.setData( '<p>foo!</p>', function() {
 			assert.isMatching( /^<p>foo!(<br>)?<\/p>$/i, editor.editable().getHtml(), 'data' );
 			assert.isFalse( !!editor._.hiddenSelectionContainer, 'hiddenSelectionContainer' );
 			assert.isFalse( !!editor.getSelection().isFake, 'isFake' );
@@ -251,7 +261,7 @@ bender.test( {
 	},
 
 	'Fake-selection bookmark': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
 		bender.tools.setHtmlWithSelection( editor, '<p>[foo <span id="bar">bar</span> <span id="bom">bom</span>]</p>' );
 
@@ -278,9 +288,9 @@ bender.test( {
 	},
 
 	'Fake-selection bookmark mark as not faked when no enclosed node found. (https://dev.ckeditor.com/ticket/13280)': function() {
-		bender.tools.selection.setWithHtml( this.editor, '<p>fo{o ba}r</p>' );
+		bender.tools.selection.setWithHtml( this.editors.classic, '<p>fo{o ba}r</p>' );
 
-		var sel = this.editor.getSelection(),
+		var sel = this.editors.classic.getSelection(),
 			bookmarks = sel.createBookmarks2(),
 			selectRangesSpy = sinon.spy( sel, 'selectRanges' ),
 			warnStub = sinon.stub( CKEDITOR, 'warn' );
@@ -294,7 +304,7 @@ bender.test( {
 	},
 
 	'Fake-selection bookmark (serializable)': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
 		bender.tools.setHtmlWithSelection( editor, '<p>[foo <span id="bar">bar</span> <span id="bom">bom</span>]</p>' );
 
@@ -322,7 +332,7 @@ bender.test( {
 	},
 
 	'Fake-selection bookmark 2': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
 		bender.tools.setHtmlWithSelection( editor, '<p>[foo <span id="bar">bar</span> <span id="bom">bom</span>]</p>' );
 
@@ -347,7 +357,7 @@ bender.test( {
 	},
 
 	'Fake-selection bookmark 2 (normalized)': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
 		bender.tools.setHtmlWithSelection( editor, '<p>[foo <span id="bar">bar</span> <span id="bom">bom</span>]</p>' );
 
@@ -375,7 +385,7 @@ bender.test( {
 	},
 
 	'Fake-selection does not create undo snapshots': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
 		bender.tools.setHtmlWithSelection( editor, '<p>[foo <span id="bar">bar</span> <span id="bom">bom</span>]</p>' );
 
@@ -395,7 +405,7 @@ bender.test( {
 	},
 
 	'Fake-selection undo': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
 		bender.tools.setHtmlWithSelection( editor, '<p>[foo <span id="bar">bar</span> bom]</p>' );
 
@@ -427,7 +437,7 @@ bender.test( {
 	},
 
 	'Fake-selection restore on focus': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
 		editor.focus();
 
@@ -497,7 +507,7 @@ bender.test( {
 	},
 
 	'Fake-selection automatically resets on selectionChange': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
 		bender.tools.setHtmlWithSelection( editor, '<p>[foo] <span id="bar">bar</span> <span id="bom">bom</span></p>' );
 
@@ -523,7 +533,7 @@ bender.test( {
 	},
 
 	'Fake-selection moved between elements': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
 		bender.tools.setHtmlWithSelection( editor, '<p>[foo] <span id="bar">bar</span> <span id="bom">bom</span></p>' );
 
@@ -550,7 +560,7 @@ bender.test( {
 	},
 
 	'Fake-selection does not blow up when switching mode': function() {
-		var editor = this.editor,
+		var editor = this.editors.classic,
 			selectionChange = 0;
 
 		bender.tools.setHtmlWithSelection( editor, '<p>[foo] <span id="bar">bar</span> <span id="bom">bom</span></p>' );
@@ -654,10 +664,10 @@ bender.test( {
 	},
 
 	'Test leaving fake selection by arrow keys': function() {
-		var editor = this.editor,
+		var editor = this.editors.classic,
 			prevented = 0;
 
-		this.editorBot.setData( '<p>foo</p><p id="start">X</p><p>bar</p>', function() {
+		this.editorBots.classic.setData( '<p>foo</p><p id="start">X</p><p>bar</p>', function() {
 			var ps = editor.document.getById( 'start' ),
 				editable = editor.editable();
 
@@ -688,10 +698,10 @@ bender.test( {
 	},
 
 	'Test staying in selected non-editable element by arrow keys if there is not editing place by its side': function() {
-		var editor = this.editor,
+		var editor = this.editors.classic,
 			prevented = 0;
 
-		this.editorBot.setData( '<p id="start" contenteditable="false">foo</p>', function() {
+		this.editorBots.classic.setData( '<p id="start" contenteditable="false">foo</p>', function() {
 			var ps = editor.document.getById( 'start' ),
 				editable = editor.editable();
 
@@ -726,9 +736,9 @@ bender.test( {
 	},
 
 	'Test moving to sibling non-editable blocks by arrow keys': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
-		this.editorBot.setData( '<p>X</p><p id="p1" contenteditable="false">X</p><p id="p2" contenteditable="false">X</p><p id="p3" contenteditable="false">X</p>', function() {
+		this.editorBots.classic.setData( '<p>X</p><p id="p1" contenteditable="false">X</p><p id="p2" contenteditable="false">X</p><p id="p3" contenteditable="false">X</p>', function() {
 			var p1 = editor.document.getById( 'p1' ),
 				p2 = editor.document.getById( 'p2' ),
 				p3 = editor.document.getById( 'p3' ),
@@ -759,9 +769,9 @@ bender.test( {
 	},
 
 	'Test deleting selected element (del)': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
-		this.editorBot.setData( '<p>X</p><p id="start" contenteditable="false">foo</p><p>bar</p>', function() {
+		this.editorBots.classic.setData( '<p>X</p><p id="start" contenteditable="false">foo</p><p>bar</p>', function() {
 			var ps = editor.document.getById( 'start' ),
 				editable = editor.editable(),
 				prevented;
@@ -779,9 +789,9 @@ bender.test( {
 	},
 
 	'Test deleting selected element (backspace)': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
-		this.editorBot.setData( '<p>bar</p><p id="start" contenteditable="false">foo</p><p>X</p>', function() {
+		this.editorBots.classic.setData( '<p>bar</p><p id="start" contenteditable="false">foo</p><p>X</p>', function() {
 			var ps = editor.document.getById( 'start' ),
 				editable = editor.editable(),
 				prevented;
@@ -799,9 +809,9 @@ bender.test( {
 	},
 
 	'Test deleting selected inline element (del)': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
-		this.editorBot.setData( '<p>bar<span id="start">foo</span>bom</p>', function() {
+		this.editorBots.classic.setData( '<p>bar<span id="start">foo</span>bom</p>', function() {
 			var ps = editor.document.getById( 'start' ),
 				editable = editor.editable(),
 				prevented;
@@ -819,9 +829,9 @@ bender.test( {
 	},
 
 	'Test deleting selected inline element (backspace)': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
-		this.editorBot.setData( '<p>bar<span id="start">foo</span>bom</p>', function() {
+		this.editorBots.classic.setData( '<p>bar<span id="start">foo</span>bom</p>', function() {
 			var ps = editor.document.getById( 'start' ),
 				editable = editor.editable(),
 				prevented;
@@ -839,9 +849,9 @@ bender.test( {
 	},
 
 	'Test deleting selected element - no editable space after element (del)': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
-		this.editorBot.setData( '<p>bar</p><p id="start" contenteditable="false">foo</p>', function() {
+		this.editorBots.classic.setData( '<p>bar</p><p id="start" contenteditable="false">foo</p>', function() {
 			var ps = editor.document.getById( 'start' ),
 				editable = editor.editable(),
 				prevented;
@@ -859,9 +869,9 @@ bender.test( {
 	},
 
 	'Test deleting selected element - no editable space before element (backspace)': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
-		this.editorBot.setData( '<p id="start" contenteditable="false">foo</p><p>bar</p>', function() {
+		this.editorBots.classic.setData( '<p id="start" contenteditable="false">foo</p><p>bar</p>', function() {
 			var ps = editor.document.getById( 'start' ),
 				editable = editor.editable(),
 				prevented;
@@ -879,9 +889,9 @@ bender.test( {
 	},
 
 	'Test deleting selected element - no space at all': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
-		this.editorBot.setData( '<p id="start" contenteditable="false">foo</p>', function() {
+		this.editorBots.classic.setData( '<p id="start" contenteditable="false">foo</p>', function() {
 			var ps = editor.document.getById( 'start' ),
 				editable = editor.editable(),
 				prevented;
@@ -899,9 +909,9 @@ bender.test( {
 	},
 
 	'Test selecting non-editable element by keys - inline': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
-		this.editorBot.setData( '<p id="el1">foo<span id="target" contenteditable="false">bar</span><em id="el2">bom</em></p>', function() {
+		this.editorBots.classic.setData( '<p id="el1">foo<span id="target" contenteditable="false">bar</span><em id="el2">bom</em></p>', function() {
 			var el1 = editor.document.getById( 'el1' ),
 				el2 = editor.document.getById( 'el2' ),
 				target = editor.document.getById( 'target' ),
@@ -917,9 +927,9 @@ bender.test( {
 	},
 
 	'Test selecting non-editable element by keys - block': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
-		this.editorBot.setData( '<p id="el1">foo</p><p id="target" contenteditable="false">bar</p><ul><li id="el2">bom</li></ul>', function() {
+		this.editorBots.classic.setData( '<p id="el1">foo</p><p id="target" contenteditable="false">bar</p><ul><li id="el2">bom</li></ul>', function() {
 			var el1 = editor.document.getById( 'el1' ),
 				el2 = editor.document.getById( 'el2' ),
 				target = editor.document.getById( 'target' ),
@@ -933,9 +943,9 @@ bender.test( {
 	},
 
 	'Test selecting non-editable element by keys - opt out': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
-		this.editorBot.setData( '<p id="el1">foo</p><p id="target" contenteditable="false">bar</p><p></p><p id="el2">bom</p>', function() {
+		this.editorBots.classic.setData( '<p id="el1">foo</p><p id="target" contenteditable="false">bar</p><p></p><p id="el2">bom</p>', function() {
 			var el1 = editor.document.getById( 'el1' ),
 				el2 = editor.document.getById( 'el2' ),
 				range = editor.createRange(),
@@ -956,7 +966,7 @@ bender.test( {
 	},
 
 	'Test auto fake selection for inline element containing nested non-editable': function() {
-		var bot = this.editorBot;
+		var bot = this.editorBots.classic;
 
 		bot.setData( bender.tools.getValueAsHtml( 'editor_content' ), function() {
 			var editor = bot.editor,
@@ -971,7 +981,7 @@ bender.test( {
 	},
 
 	'Test auto fake selection for inline element containing only non-editable': function() {
-		var bot = this.editorBot;
+		var bot = this.editorBots.classic;
 
 		bot.setData( bender.tools.getValueAsHtml( 'editor_content2' ), function() {
 			var editor = bot.editor,
@@ -986,7 +996,7 @@ bender.test( {
 	},
 
 	'Test no auto fake selection if non-editable element is not the only child of enclosed element': function() {
-		var bot = this.editorBot;
+		var bot = this.editorBots.classic;
 
 		bot.setData( bender.tools.getValueAsHtml( 'editor_content3' ), function() {
 			var editor = bot.editor,
@@ -1000,9 +1010,9 @@ bender.test( {
 	},
 
 	'Test select editable contents when fake selection is on': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
-		this.editorBot.setData( '<p>a<em id="b">b</em>c</p>', function() {
+		this.editorBots.classic.setData( '<p>a<em id="b">b</em>c</p>', function() {
 			var editable = editor.editable(),
 				doc = editor.document,
 				range;
@@ -1030,9 +1040,9 @@ bender.test( {
 
 	// https://dev.ckeditor.com/ticket/11393.
 	'Test select editable contents when fake selection was on and DOM has been overwritten': function() {
-		var editor = this.editor;
+		var editor = this.editors.classic;
 
-		this.editorBot.setData( '<p id="a">a<em id="b">b</em>c</p>', function() {
+		this.editorBots.classic.setData( '<p id="a">a<em id="b">b</em>c</p>', function() {
 			var editable = editor.editable(),
 				doc = editor.document,
 				range;
@@ -1069,7 +1079,7 @@ bender.test( {
 			assert.ignore();
 		}
 
-		var editor = this.editor, bot = this.editorBot;
+		var editor = this.editors.classic, bot = this.editorBots.classic;
 
 		editor.setReadOnly( true );
 
@@ -1086,6 +1096,30 @@ bender.test( {
 			editor.fire( 'key', { keyCode: 46, domEvent: domEvent } ); // delete
 
 			assert.areEqual( '<p>[[placeholder]]</p>', editor.getData() );
+		} );
+	},
+
+	// #1580
+	'test MS edge resets hidden container selection': function() {
+		if ( !CKEDITOR.env.edge ) {
+			assert.ignore();
+		}
+
+		var bot = this.editorBots.divarea,
+			editor = this.editors.divarea;
+
+		bot.setData( '<p>[[placeholder]]</p>', function() {
+			var widget = editor.widgets.instances[ 0 ];
+			widget.focus();
+			// Simulate missing native selection - similar when clicked into balloontoolbar in Edge
+			CKEDITOR.document.getWindow().$.getSelection().removeAllRanges();
+
+			editor.selectionChange( true );
+
+			var sel = editor.getSelection().getStartElement();
+
+			assert.isTrue( CKEDITOR.plugins.widget.isDomWidgetWrapper( sel ) );
+
 		} );
 	}
 } );
