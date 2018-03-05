@@ -231,39 +231,41 @@
 	// change on the tree, then the selectionChange event gets fired.
 	function checkSelectionChange() {
 		// A possibly available fake-selection.
-		var sel = this._.fakeSelection,
+		var savedSelection = this._.fakeSelection,
 			realSel;
 
-		if ( sel ) {
+		if ( savedSelection ) {
 			realSel = this.getSelection( 1 );
 			// If real (not locked/stored) selection was moved from hidden container
 			// or is not a table one, then the fake-selection must be invalidated.
-			if ( !realSel || ( !realSel.isHidden() && !isRealTableSelection( realSel, sel ) ) ) {
-				if ( CKEDITOR.env.edge && isWidget( sel.getStartElement() ) ) {
-					// Edge remove native selection from hidden element we need to restore it for widget.
-					var selectedWidget = this.widgets.getByElement( sel.getStartElement() ).wrapper;
-					sel.reset();
-					realSel.fake( selectedWidget );
+			var isValidFakeSelection = !realSel || ( !realSel.isHidden() && !isRealTableSelection( realSel, savedSelection ) );
+
+			if ( isValidFakeSelection ) {
+				if ( CKEDITOR.env.edge && isWidget( savedSelection.getStartElement() ) ) {
+					// Edge removes native selection from hidden element. That's why if we have fake selected widget we want to restore the selection (#1580).
+					var currentlySelectedWidget = this.widgets.getByElement( savedSelection.getStartElement() ).wrapper;
+					savedSelection.reset();
+					realSel.fake( currentlySelectedWidget );
 				} else {
 					// Remove the cache from fake-selection references in use elsewhere.
-					sel.reset();
+					savedSelection.reset();
 
 					// Have the code using the native selection.
-					sel = 0;
+					savedSelection = 0;
 				}
 			}
 		}
 
 		// If not fake-selection is available then get the native selection.
-		if ( !sel ) {
-			sel = realSel || this.getSelection( 1 );
+		if ( !savedSelection ) {
+			savedSelection = realSel || this.getSelection( 1 );
 
 			// Editor may have no selection at all.
-			if ( !sel || sel.getType() == CKEDITOR.SELECTION_NONE )
+			if ( !savedSelection || savedSelection.getType() == CKEDITOR.SELECTION_NONE )
 				return;
 		}
 
-		this.fire( 'selectionCheck', sel );
+		this.fire( 'selectionCheck', savedSelection );
 
 		var currentPath = this.elementPath();
 		if ( !currentPath.compare( this._.selectionPreviousPath ) ) {
@@ -274,7 +276,7 @@
 				this._.previousActive = this.document.getActive();
 
 			this._.selectionPreviousPath = currentPath;
-			this.fire( 'selectionChange', { selection: sel, path: currentPath } );
+			this.fire( 'selectionChange', { selection: savedSelection, path: currentPath } );
 		}
 	}
 
