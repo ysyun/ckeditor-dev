@@ -760,7 +760,7 @@
 					element.setAttribute( 'draggable', 'false' );
 					this.registerFocusable( element );
 				}, this );
-				// We need to initially set status of richCombo items.
+				// We need to initially set status of richCombo items #1268.
 				CKEDITOR.tools.array.forEach( keys, function( itemKey ) {
 					if ( CKEDITOR.ui.richCombo && items[ itemKey ] instanceof CKEDITOR.ui.richCombo ) {
 						( items[ itemKey ] ).updateState( editor );
