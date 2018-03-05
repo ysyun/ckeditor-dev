@@ -1,6 +1,12 @@
 ﻿CKEditor 4 Changelog
 ====================
 
+## CKEditor 4.9.1
+
+Fixed Issues:
+
+* [#1580](https://github.com/ckeditor/ckeditor-dev/issues/1580): Fixed: wrongly refreshed balloontoolbar in Edge browse.
+
 ## CKEditor 4.9
 
 New Features:
