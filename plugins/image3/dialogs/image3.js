@@ -463,7 +463,7 @@ CKEDITOR.dialog.add('image3', function (editor) {
 				orgHeight = null;
 			}
 			this.id = editor.id + "previewimage";
-			this.setAttribute("style", "margin:20px 0;max-width:400px;max-height:100px;");
+			this.setAttribute("style", "max-width:400px;max-height:100px;");
 			this.setAttribute("alt", "");
 
 			/* Insert preview image */
@@ -613,10 +613,16 @@ CKEDITOR.dialog.add('image3', function (editor) {
 			// Get the natural height of the image.
 			preLoadedHeight = domHeight = natural.height;
 
+
 			/* Remove preview */
 			imgPreview.getElement().setHtml("");
 			t = this, orgWidth = null, orgHeight = null, imgScal = 1, lock = true;
-			if (image.getAttribute('src') == '') {
+			if (widget.data.align == 'none') {
+				t.setValueOf("info", "align", 'center');
+			} else {
+				t.setValueOf("info", "align", widget.data.align);
+			}
+			if (widget.data.src == '') {
 				return;
 			}
 			selectedImg = image;
@@ -638,7 +644,7 @@ CKEDITOR.dialog.add('image3', function (editor) {
 			}
 
 			if (typeof (selectedImg.getAttribute("src")) == "string") {
-				imagePreview("base64");
+				// imagePreview("base64");
 				imagePreviewLoad(selectedImg.getAttribute("src"));
 			}
 
@@ -677,10 +683,11 @@ CKEDITOR.dialog.add('image3', function (editor) {
 					{
 						type: 'hbox',
 						widths: ['25%', '25%', '50%'],
+						style: "margin-top:10px;",
 						requiredContent: features.dimension.requiredContent,
 						children: [{
 								type: 'text',
-								width: '45px',
+								width: '55px',
 								id: 'width',
 								label: commonLang.width,
 								validate: validateDimension,
@@ -698,7 +705,7 @@ CKEDITOR.dialog.add('image3', function (editor) {
 							{
 								type: 'text',
 								id: 'height',
-								width: '45px',
+								width: '55px',
 								label: commonLang.height,
 								validate: validateDimension,
 								onKeyUp: onChangeDimension,
@@ -717,19 +724,24 @@ CKEDITOR.dialog.add('image3', function (editor) {
 					{
 						type: 'hbox',
 						id: 'alignment',
+						style: "margin-top:5px;",
 						requiredContent: features.align.requiredContent,
 						children: [{
 							id: 'align',
 							type: 'radio',
 							items: [
-								[commonLang.alignNone, 'none'],
+								// [commonLang.alignNone, 'none'],
 								[commonLang.left, 'left'],
 								[commonLang.center, 'center'],
 								[commonLang.right, 'right']
 							],
 							label: commonLang.align,
 							setup: function (widget) {
-								this.setValue(widget.data.align);
+								if (widget.data.align == 'none') {
+									this.setValue('center');
+								} else {
+									this.setValue(widget.data.align);
+								}
 							},
 							commit: function (widget) {
 								widget.setData('align', this.getValue());
@@ -739,6 +751,7 @@ CKEDITOR.dialog.add('image3', function (editor) {
 					{
 						type: "html",
 						id: "preview",
+						style: "margin:20px 0;",
 						html: new CKEDITOR.template("<div style=\"text-align:center;\"></div>").output(),
 						onLoad: function () {
 							imgPreview = this;
