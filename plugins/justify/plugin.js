@@ -64,7 +64,7 @@
 		}
 
 		this.allowedContent = {
-			'caption div h1 h2 h3 h4 h5 h6 p pre td th li': {
+			'caption div h1 h2 h3 h4 h5 h6 p pre td th li img': {
 				// Do not add elements, but only text-align style if element is validated by other rule.
 				propertiesOnly: true,
 				styles: this.cssClassName ? null : 'text-align',

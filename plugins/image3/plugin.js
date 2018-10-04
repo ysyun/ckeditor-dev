@@ -53,13 +53,13 @@
 			'}' +
 			// Bottom-left corner style of the resizer.
 			'.cke_image_resizer.cke_image_resizer_left{' +
-				'right:auto;' +
-				'left:-5px;' +
-				'cursor:sw-resize;' +
+				// 'right:auto;' +
+				// 'left:-5px;' +
+				// 'cursor:sw-resize;' +
 			'}' +
 			'.cke_widget_wrapper:hover .cke_image_resizer,' +
 			'.cke_image_resizer.cke_image_resizing{' +
-				'display:block' +
+				// 'display:block' +
 			'}' +
 			// Expand widget wrapper when linked inline image.
 			'.cke_widget_wrapper>a{' +
@@ -240,6 +240,8 @@
 			// non-captioned, block or inline according to what is the
 			// new state of the widget.
 			if ( this.deflated ) {
+				// this.widget = editor.widgets.initOn( this.element, 'image', this.widget.data );
+				// delete data by pyun
 				this.widget = editor.widgets.initOn( this.element, 'image', this.widget.data );
 
 				// Once widget was re-created, it may become an inline element without
@@ -398,7 +400,7 @@
 						if ( data.align ) {
 							alignElement.removeClass( alignClasses[ alignmentsObj[ data.align ] ] );
 						} else {
-							data.align = 'none';
+							data.align = 'none'; // always center
 						}
 					}
 					// Read initial float style from figure/image and then remove it.

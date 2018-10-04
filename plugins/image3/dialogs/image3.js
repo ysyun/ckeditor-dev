@@ -586,7 +586,12 @@ CKEDITOR.dialog.add('image3', function (editor) {
 				imagePreview("file");
 			});
 			imgPreview = this.getContentElement("info", "preview");
-			// imageDimensions("width");
+			this.getContentElement("info", "width").getInputElement().on("keyup", function () {
+				imageDimensions("width");
+			});
+			this.getContentElement("info", "height").getInputElement().on("keyup", function () {
+				imageDimensions("height");
+			});
 
 		},
 		onShow: function () {
@@ -611,6 +616,32 @@ CKEDITOR.dialog.add('image3', function (editor) {
 			/* Remove preview */
 			imgPreview.getElement().setHtml("");
 			t = this, orgWidth = null, orgHeight = null, imgScal = 1, lock = true;
+			if (image.getAttribute('src') == '') {
+				return;
+			}
+			selectedImg = image;
+
+			if (typeof (selectedImg.getAttribute("width")) == "string") orgWidth = selectedImg.getAttribute("width");
+			if (typeof (selectedImg.getAttribute("height")) == "string") orgHeight = selectedImg.getAttribute("height");
+			if ((orgWidth == null || orgHeight == null) && selectedImg.$) {
+				orgWidth = selectedImg.$.width;
+				orgHeight = selectedImg.$.height;
+			}
+			if (orgWidth != null && orgHeight != null) {
+				t.setValueOf("info", "width", orgWidth);
+				t.setValueOf("info", "height", orgHeight);
+				orgWidth = parseInt(orgWidth, 10);
+				orgHeight = parseInt(orgHeight, 10);
+				imgScal = 1;
+				if (!isNaN(orgWidth) && !isNaN(orgHeight) && orgHeight > 0 && orgWidth > 0) imgScal = orgWidth / orgHeight;
+				if (imgScal <= 0) imgScal = 1;
+			}
+
+			if (typeof (selectedImg.getAttribute("src")) == "string") {
+				imagePreview("base64");
+				imagePreviewLoad(selectedImg.getAttribute("src"));
+			}
+
 		},
 		contents: [{
 				id: 'info',
@@ -624,13 +655,10 @@ CKEDITOR.dialog.add('image3', function (editor) {
 								type: "file",
 								id: "file",
 								label: "",
-								// onChange: function () {
-								// 	imagePreview("file");
-								// },
 								onKeyup: onChangeSrc,
 								onChange: onChangeSrc,
 								setup: function (widget) {
-									// this.setValue(widget.data.src);
+									this.setValue(widget.data.src);
 								},
 								commit: function (widget) {
 									var src = "";

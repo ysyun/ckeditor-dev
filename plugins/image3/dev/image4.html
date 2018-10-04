@@ -11,7 +11,6 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 	<script src="../../../dev/console/console.js"></script>
 	<script src="../../../dev/console/focusconsole.js"></script>
 	<script src="../../widget/dev/console.js"></script>
-	<script src="./dragresize.js"></script>
 	<script>
 		if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
 			CKEDITOR.tools.enableHtml5Elements( document );
@@ -111,12 +110,6 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 
 		<p>After being sent to the Moon by the Saturn V&#39;s upper stage, the astronauts separated the spacecraft from it and travelled for three days until they entered into lunar orbit. Armstrong and Aldrin then moved into the Lunar Module and landed in the <a href="http://en.wikipedia.org/wiki/Mare_Tranquillitatis" title="Mare Tranquillitatis">Sea of Tranquility</a>. They stayed a total of about 21 and a half hours on the lunar surface. After lifting off in the upper part of the Lunar Module and rejoining Collins in the Command Module, they returned to Earth and landed in the <a href="http://en.wikipedia.org/wiki/Pacific_Ocean" title="Pacific Ocean">Pacific Ocean</a> on July 24.</p>
 
-		<p class="align-center">
-			<img alt="Saturn V" src="assets/image1.jpg" width="200" />
-		</p>
-
-		<hr />
-		<p style="text-align:right"><small>Source: <a href="http://en.wikipedia.org/wiki/Apollo_11">Wikipedia.org</a></small></p>
 	</textarea>
 
 	<p>
@@ -150,7 +143,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 		// } );
 
 		CKEDITOR.replace( 'editor4', {
-			extraPlugins: 'image3',
+			extraPlugins: 'image3,dragresize',
 			image3_alignClasses: [ 'align-left', 'align-center', 'align-right' ],
 			image3_disableResizer: false,
 			contentsCss: [ '../../../contents.css', 'contents.css' ],
