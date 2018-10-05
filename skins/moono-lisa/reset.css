@@ -50,8 +50,9 @@ https://docs.ckeditor.com/ckeditor4/docs/#!/guide/skin_sdk_reset
 	border: 0;
 	background: transparent;
 	text-decoration: none;
-	width: auto;
-	height: auto;
+	/* by pyun */
+	/* width: auto;
+	height: auto; */
 	vertical-align: baseline;
 	box-sizing: content-box;
 	position: static;
