@@ -34,7 +34,6 @@ var CKBUILDER_CONFIG = {
 	],
 	plugins: {
 		lineutils: 1,
-		widget: 1,
 		widgetselection: 1,
 		clipboard: 1,
 		panelbutton: 1,
