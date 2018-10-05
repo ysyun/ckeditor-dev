@@ -676,7 +676,7 @@ CKEDITOR.dialog.add('image3', function (editor) {
 									if (typeof (src) != "string" || src == null || src === "") return;
 									// widget.setData('src', this.getValue());
 									widget.setData('src', src);
-								},
+								}
 							}
 						]
 					},
@@ -755,7 +755,7 @@ CKEDITOR.dialog.add('image3', function (editor) {
 						html: new CKEDITOR.template("<div style=\"text-align:center;\"></div>").output(),
 						onLoad: function () {
 							imgPreview = this;
-						},
+						}
 					}
 				]
 			}
