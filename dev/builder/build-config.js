@@ -55,7 +55,6 @@ var CKBUILDER_CONFIG = {
 		horizontalrule: 1,
 		indentblock: 1,
 		justify: 1,
-		link: 1,
 		list: 1,
 		liststyle: 1,
 		magicline: 1,

@@ -118,7 +118,8 @@
 				integrate( value );
 
 			// Integrate with link commands (link plugin).
-			linkCommandIntegrator( editor );
+			// remove link. just use simple link plugin
+			// linkCommandIntegrator(editor);
 		}
 	} );
 
