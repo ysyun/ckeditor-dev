@@ -70,8 +70,10 @@ CKEDITOR.resourceManager.prototype = {
 	 * @see CKEDITOR.pluginDefinition
 	 */
 	add: function( name, definition ) {
-		if ( this.registered[ name ] )
-			throw new Error( '[CKEDITOR.resourceManager.add] The resource name "' + name + '" is already registered.' );
+		if ( this.registered[ name ] ) {
+			console.log('[CKEDITOR.resourceManager.add] The resource name "' + name + '" is already registered.');
+			//throw new Error( '[CKEDITOR.resourceManager.add] The resource name "' + name + '" is already registered.' );
+		}
 
 		var resource = this.registered[ name ] = definition || {};
 		resource.name = name;
