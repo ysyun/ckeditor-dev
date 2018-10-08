@@ -556,7 +556,7 @@ CKEDITOR.dialog.add('image3', function (editor) {
 			o.h += "%";
 		}
 		t.getContentElement("info", "width").setValue(o.w),
-		t.getContentElement("info", "height").setValue(o.h)
+			t.getContentElement("info", "height").setValue(o.h)
 	}
 
 	/* Set integer Value */
@@ -650,115 +650,112 @@ CKEDITOR.dialog.add('image3', function (editor) {
 
 		},
 		contents: [{
-				id: 'info',
-				label: lang.infoTab,
-				elements: [
-					{
-						type: "hbox",
-						widths: ["70px"],
-						children: [
-							{
-								type: "file",
-								id: "file",
-								label: "",
-								onKeyup: onChangeSrc,
-								onChange: onChangeSrc,
-								setup: function (widget) {
-									this.setValue(widget.data.src);
-								},
-								commit: function (widget) {
-									var src = "";
-									try {
-										src = CKEDITOR.document.getById(editor.id + "previewimage").$.src;
-									} catch (e) {
-										src = "";
-									}
-									if (typeof (src) != "string" || src == null || src === "") return;
-									// widget.setData('src', this.getValue());
-									widget.setData('src', src);
-								}
+			id: 'info',
+			label: lang.infoTab,
+			elements: [{
+					type: "hbox",
+					widths: ["70px"],
+					children: [{
+						type: "file",
+						id: "file",
+						label: "",
+						onKeyup: onChangeSrc,
+						onChange: onChangeSrc,
+						setup: function (widget) {
+							// filename for input element
+							// this.setValue(widget.data.src); 
+						},
+						commit: function (widget) {
+							var src = "";
+							try {
+								src = CKEDITOR.document.getById(editor.id + "previewimage").$.src;
+							} catch (e) {
+								src = "";
 							}
-						]
-					},
-					{
-						type: 'hbox',
-						widths: ['25%', '25%', '50%'],
-						style: "margin-top:10px;",
-						requiredContent: features.dimension.requiredContent,
-						children: [{
-								type: 'text',
-								width: '55px',
-								id: 'width',
-								label: commonLang.width,
-								validate: validateDimension,
-								onKeyUp: onChangeDimension,
-								onLoad: function () {
-									widthField = this;
-								},
-								setup: function (widget) {
-									this.setValue(widget.data.width);
-								},
-								commit: function (widget) {
-									widget.setData('width', this.getValue());
-								}
+							if (typeof (src) != "string" || src == null || src === "") return;
+							widget.setData('src', src);
+						}
+					}]
+				},
+				{
+					type: 'hbox',
+					widths: ['25%', '25%', '50%'],
+					style: "margin-top:10px;",
+					requiredContent: features.dimension.requiredContent,
+					children: [{
+							type: 'text',
+							width: '55px',
+							id: 'width',
+							label: commonLang.width,
+							validate: validateDimension,
+							onKeyUp: onChangeDimension,
+							onLoad: function () {
+								widthField = this;
 							},
-							{
-								type: 'text',
-								id: 'height',
-								width: '55px',
-								label: commonLang.height,
-								validate: validateDimension,
-								onKeyUp: onChangeDimension,
-								onLoad: function () {
-									heightField = this;
-								},
-								setup: function (widget) {
-									this.setValue(widget.data.height);
-								},
-								commit: function (widget) {
-									widget.setData('height', this.getValue());
-								}
-							}
-						]
-					},
-					{
-						type: 'hbox',
-						id: 'alignment',
-						style: "margin-top:5px;",
-						requiredContent: features.align.requiredContent,
-						children: [{
-							id: 'align',
-							type: 'radio',
-							items: [
-								// [commonLang.alignNone, 'none'],
-								[commonLang.left, 'left'],
-								[commonLang.center, 'center'],
-								[commonLang.right, 'right']
-							],
-							label: commonLang.align,
 							setup: function (widget) {
-								if (widget.data.align == 'none') {
-									this.setValue('center');
-								} else {
-									this.setValue(widget.data.align);
-								}
+								this.setValue(widget.data.width);
 							},
 							commit: function (widget) {
-								widget.setData('align', this.getValue());
+								widget.setData('width', this.getValue());
 							}
-						}]
-					},
-					{
-						type: "html",
-						id: "preview",
-						style: "margin:20px 0;",
-						html: new CKEDITOR.template("<div style=\"text-align:center;\"></div>").output(),
-						onLoad: function () {
-							imgPreview = this;
+						},
+						{
+							type: 'text',
+							id: 'height',
+							width: '55px',
+							label: commonLang.height,
+							validate: validateDimension,
+							onKeyUp: onChangeDimension,
+							onLoad: function () {
+								heightField = this;
+							},
+							setup: function (widget) {
+								this.setValue(widget.data.height);
+							},
+							commit: function (widget) {
+								widget.setData('height', this.getValue());
+							}
 						}
+					]
+				},
+				{
+					type: 'hbox',
+					id: 'alignment',
+					style: "margin-top:5px;",
+					widths: ['25%', '25%', '25%', '25%'],
+					requiredContent: features.align.requiredContent,
+					children: [{
+						id: 'align',
+						type: 'radio',
+						items: [
+							// [commonLang.alignNone, 'none'],
+							[commonLang.left, 'left'],
+							[commonLang.center, 'center'],
+							[commonLang.right, 'right']
+						],
+						label: commonLang.align,
+						setup: function (widget) {
+							if (widget.data.align == 'none') {
+								this.setValue('center');
+							} else {
+								this.setValue(widget.data.align);
+							}
+						},
+						commit: function (widget) {
+							widget.setData('align', this.getValue());
+						}
+					}]
+				},
+				{
+					type: "html",
+					id: "preview",
+					style: "margin:20px 0;",
+					html: new CKEDITOR.template("<div style=\"text-align:center;\"></div>").output(),
+					onLoad: function () {
+						imgPreview = this;
 					}
-				]
-			}
-		]
+				}
+			]
+		}]
 	};
 });
