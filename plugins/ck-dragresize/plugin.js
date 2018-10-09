@@ -14,9 +14,9 @@
 
 	var isWebkit = ('WebkitAppearance' in document.documentElement.style);
 
-    /**
-     * Initializes the plugin
-     */
+	/**
+	 * Initializes the plugin
+	 */
 	CKEDITOR.plugins.add(PLUGIN_NAME, {
 		onLoad: function () {
 			if (!isWebkit) {
@@ -58,12 +58,16 @@
 		}, false);
 
 		function selectionChange() {
-			if (!isEditable()) { return; }
+			if (!isEditable()) {
+				return;
+			}
 
 			var selection = editor.getSelection();
 			if (!selection) return;
 			if (selection.getType() !== CKEDITOR.SELECTION_NONE) {
-				if (resizer.isShow) { return; }
+				if (resizer.isShow) {
+					return;
+				}
 				// If an element is selected and that element is an IMG
 				// For supporting the Ehanced Image & Image3 plugins by pyun
 				var isImage = false,
@@ -200,10 +204,12 @@
 					var box = this.box = getBoundingBox(selectionEl, el);
 					positionElement(this.container, box.left, box.top);
 					var wrapper = selectionEl.$.querySelector('.cke_image_resizer_wrapper');
-					wrapper.appendChild(this.container);
-					this.el.classList.add('ckimgrsz');
-					this.showHandles();
-					this.isShow = true;
+					if (wrapper && !this.isShow) {
+						wrapper.appendChild(this.container);
+						this.el.classList.add('ckimgrsz');
+						this.showHandles();
+						this.isShow = true;
+					}
 				}
 			}
 		},
