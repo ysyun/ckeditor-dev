@@ -11,9 +11,9 @@
 
 	var PLUGIN_NAME = 'dragresize';
 	var IMAGE_SNAP_TO_SIZE = 7;
-	/**
-	 * Initializes the plugin
-	 */
+    /**
+     * Initializes the plugin
+     */
 	CKEDITOR.plugins.add(PLUGIN_NAME, {
 		onLoad: function () {
 			// CSS is added in a compressed form
@@ -46,15 +46,18 @@
 					resizer.initDrag(e);
 				}
 			}
-        }, false);
-        
-        document.addEventListener('mouseover', function(e) {
-            if (isEditable()) {
-				if (e.target.tagName === 'IMG') {
+		}, false);
+
+		document.addEventListener('mouseover', function (e) {
+			if (isEditable()) {
+				// excluding the preview area of image3 plugin
+				if (e.target.tagName === 'IMG' &&
+					!e.target.parentElement.parentElement.classList.contains('cke_dialog_ui_vbox_child')
+				) {
 					resizer.show(e.target);
 				}
 			}
-        }, false);
+		}, false);
 
 		function selectionChange() {
 			if (!isEditable()) {
@@ -92,7 +95,7 @@
 			}
 		}
 
-        // change mouseover
+		// change mouseover
 		// editor.on('selectionChange', selectionChange);
 
 		editor.on('getData', function (e) {
@@ -184,7 +187,9 @@
 			return false;
 		},
 		show: function (el) {
-            if (this.el !== el && this.el) { this.hide(); }
+			if (this.el !== el && this.el) {
+				this.hide();
+			}
 			this.el = el;
 			if (this.cfg.snapToSize) {
 				this.otherImages = toArray(this.document.getElementsByTagName('img'));
@@ -192,7 +197,7 @@
 			}
 			// for image3 of tidemark
 			var imageResizerWrapper = el.parentElement;
-            var widgetWrapperEl = imageResizerWrapper.parentElement.parentElement;
+			var widgetWrapperEl = imageResizerWrapper.parentElement.parentElement;
 			var box = this.box = getBoundingBox(widgetWrapperEl, el);
 			positionElement(this.container, box.left, box.top);
 			if (imageResizerWrapper) {
@@ -233,7 +238,7 @@
 			drag.onRelease = function () {
 				resizer.isDragging = false;
 				resizer.hidePreview();
-                // resizer.hide();
+				// resizer.hide();
 				resizer.editor.getSelection().unlock();
 				// Save an undo snapshot before the image is permanently changed
 				resizer.editor.fire('saveSnapshot');
