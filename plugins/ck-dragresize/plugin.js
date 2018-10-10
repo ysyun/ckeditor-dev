@@ -11,24 +11,15 @@
 
 	var PLUGIN_NAME = 'dragresize';
 	var IMAGE_SNAP_TO_SIZE = 7;
-
-	var isWebkit = ('WebkitAppearance' in document.documentElement.style);
-
 	/**
 	 * Initializes the plugin
 	 */
 	CKEDITOR.plugins.add(PLUGIN_NAME, {
 		onLoad: function () {
-			if (!isWebkit) {
-				return;
-			}
 			// CSS is added in a compressed form
 			CKEDITOR.addCss('img::selection{color:rgba(0,0,0,0)}img.ckimgrsz{outline:1px dashed #000}#ckimgrsz{width:0;height:0;cursor:default;}#ckimgrsz span{display:none;position:absolute;top:0;left:0;width:0;height:0;background-size:100% 100%;opacity:.65;outline:1px dashed #000;}#ckimgrsz i{position:absolute;display:block;width:5px;height:5px;background:#fff;border:1px solid #000}#ckimgrsz i.active,#ckimgrsz i:hover{background:#000}#ckimgrsz i.br,#ckimgrsz i.tl{cursor:nwse-resize}#ckimgrsz i.bm,#ckimgrsz i.tm{cursor:ns-resize}#ckimgrsz i.bl,#ckimgrsz i.tr{cursor:nesw-resize}#ckimgrsz i.lm,#ckimgrsz i.rm{cursor:ew-resize}body.dragging-br,body.dragging-br *,body.dragging-tl,body.dragging-tl *{cursor:nwse-resize!important}body.dragging-bm,body.dragging-bm *,body.dragging-tm,body.dragging-tm *{cursor:ns-resize!important}body.dragging-bl,body.dragging-bl *,body.dragging-tr,body.dragging-tr *{cursor:nesw-resize!important}body.dragging-lm,body.dragging-lm *,body.dragging-rm,body.dragging-rm *{cursor:ew-resize!important}');
 		},
 		init: function (editor) {
-			if (!isWebkit) {
-				return;
-			}
 			//onDomReady handler
 			editor.on('contentDom', function (evt) {
 				init(editor);
@@ -55,7 +46,15 @@
 					resizer.initDrag(e);
 				}
 			}
-		}, false);
+        }, false);
+        
+        document.addEventListener('mouseover', function(e) {
+            if (isEditable()) {
+				if (e.target.tagName === 'IMG') {
+					resizer.show(e.target);
+				}
+			}
+        }, false);
 
 		function selectionChange() {
 			if (!isEditable()) {
@@ -65,9 +64,6 @@
 			var selection = editor.getSelection();
 			if (!selection) return;
 			if (selection.getType() !== CKEDITOR.SELECTION_NONE) {
-				if (resizer.isShow) {
-					return;
-				}
 				// If an element is selected and that element is an IMG
 				// For supporting the Ehanced Image & Image3 plugins by pyun
 				var isImage = false,
@@ -92,13 +88,12 @@
 					}
 				}
 			} else {
-				if (resizer.isShow) {
-					resizer.hide();
-				}
+				resizer.hide();
 			}
 		}
 
-		editor.on('selectionChange', selectionChange);
+        // change mouseover
+		// editor.on('selectionChange', selectionChange);
 
 		editor.on('getData', function (e) {
 			var html = e.data.dataValue || '';
@@ -153,7 +148,6 @@
 		this.window = editor.window.$;
 		this.document = editor.document.$;
 		this.cfg = cfg || {};
-		this.isShow = false;
 		this.init();
 	}
 
@@ -190,27 +184,21 @@
 			return false;
 		},
 		show: function (el) {
+            if (this.el !== el && this.el) { this.hide(); }
 			this.el = el;
 			if (this.cfg.snapToSize) {
 				this.otherImages = toArray(this.document.getElementsByTagName('img'));
 				this.otherImages.splice(this.otherImages.indexOf(el), 1);
 			}
 			// for image3 of tidemark
-			var selection = this.editor.getSelection();
-			if (!selection) return;
-			if (selection.getType() !== CKEDITOR.SELECTION_NONE) {
-				var selectionEl = selection.getStartElement();
-				if (selectionEl.hasClass('cke_widget_wrapper')) {
-					var box = this.box = getBoundingBox(selectionEl, el);
-					positionElement(this.container, box.left, box.top);
-					var wrapper = selectionEl.$.querySelector('.cke_image_resizer_wrapper');
-					if (wrapper && !this.isShow) {
-						wrapper.appendChild(this.container);
-						this.el.classList.add('ckimgrsz');
-						this.showHandles();
-						this.isShow = true;
-					}
-				}
+			var imageResizerWrapper = el.parentElement;
+            var widgetWrapperEl = imageResizerWrapper.parentElement.parentElement;
+			var box = this.box = getBoundingBox(widgetWrapperEl, el);
+			positionElement(this.container, box.left, box.top);
+			if (imageResizerWrapper) {
+				imageResizerWrapper.appendChild(this.container);
+				this.el.classList.add('ckimgrsz');
+				this.showHandles();
 			}
 		},
 		hide: function () {
@@ -223,7 +211,6 @@
 			if (this.container.parentNode) {
 				this.container.parentNode.removeChild(this.container);
 			}
-			this.isShow = false;
 		},
 		initDrag: function (e) {
 			if (e.button !== 0) {
@@ -246,11 +233,7 @@
 			drag.onRelease = function () {
 				resizer.isDragging = false;
 				resizer.hidePreview();
-				// resizer.hide();
-				resizer.calculateSize(this);
-				resizer.updatePreview();
-				var box = resizer.previewBox;
-				resizer.updateHandles(box, box.left, box.top);
+                // resizer.hide();
 				resizer.editor.getSelection().unlock();
 				// Save an undo snapshot before the image is permanently changed
 				resizer.editor.fire('saveSnapshot');
