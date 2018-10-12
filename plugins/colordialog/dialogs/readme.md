@@ -1,0 +1,1 @@
+add colorpicker.js in global library before loading colordialg.js

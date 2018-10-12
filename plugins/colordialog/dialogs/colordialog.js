@@ -1,345 +1,254 @@
 ﻿/**
  * @license Copyright (c) 2003-2018, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
+ * 
+ * updated by peter yun
+ * caution: use ExtJS library and i18n
+ * date: 1 August, 2018
  */
 
-CKEDITOR.dialog.add( 'colordialog', function( editor ) {
-	// Define some shorthands.
-	var $el = CKEDITOR.dom.element,
-		$doc = CKEDITOR.document,
-		lang = editor.lang.colordialog,
-		colorCellCls = 'cke_colordialog_colorcell',
-		focusedColorLightCls = 'cke_colordialog_focused_light',
-		focusedColorDarkCls = 'cke_colordialog_focused_dark',
-		selectedColorCls = 'cke_colordialog_selected';
+(function() {
+    CKEDITOR.dialog.add('colordialog', function (editor) {
+        // Reference the dialog.
+        var lang = editor.lang.colordialog;
+        var dialog, table;
+        var iHex, iR, iG, iB, iH, iS, iV, backgroundNone, cp;
+        var isBackgroundNone = false;
 
-	// Reference the dialog.
-	var dialog,
-		selected;
+        /**
+         * Event Listeners
+         */
+        function onKeyStrokes(evt) {
+            //https://css-tricks.com/snippets/javascript/javascript-keycodes/
+            switch (evt.keyCode) {
+                // SPACE
+                // ENTER
+                case 32:
+                case 13:
+                    updateSelected(evt);
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                    break;
+                default:
+                    // Do not stop not handled events.Co
+                    return;
+            }
+        }
 
-	var spacer = {
-		type: 'html',
-		html: '&nbsp;'
-	};
+        function onChangeRGB() {
+            if (!ColorPicker) { return; }
+            cp.setHex(
+                ColorPicker.rgb2hex({
+                    r: iR.value,
+                    g: iG.value,
+                    b: iB.value,
+                })
+                );
+            }
+            
+        function onChangeHSV() {
+            if (!ColorPicker) { return; }
+            cp.setHex(
+                ColorPicker.hsv2hex({
+                    h: iH.value,
+                    s: iS.value,
+                    v: iV.value,
+                })
+            );
+        }
 
-	var numbering = function( id ) {
-			return CKEDITOR.tools.getNextId() + '_' + id;
-		},
-		hicolorId = numbering( 'hicolor' ),
-		hicolorTextId = numbering( 'hicolortext' ),
-		selHiColorId = numbering( 'selhicolor' ),
-		table;
+        /**
+         * Color Updaters
+         */
+        function updateInputs(hex) {
+            if (!ColorPicker) { return; }
+            var rgb = ColorPicker.hex2rgb(hex);
+            var hsv = ColorPicker.hex2hsv(hex);
+            iHex.value = isBackgroundNone ? PR.i18n('phoenix.generic.none') : hex.toUpperCase();
+            // iHex.value = hex;
+            iR.value = rgb.r;
+            iG.value = rgb.g;
+            iB.value = rgb.b;
+            iH.value = hsv.h.toFixed(2);
+            iS.value = hsv.s.toFixed(2);
+            iV.value = hsv.v.toFixed(2);
 
-	function clearSelected() {
-		$doc.getById( selHiColorId ).removeStyle( 'background-color' );
-		dialog.getContentElement( 'picker', 'selectedColor' ).setValue( '' );
-		removeSelected();
-	}
+            dialog.getContentElement('picker', 'selectedColor').setValue(hex);
+        }
 
-	function updateSelected( evt ) {
-		var target = evt.data.getTarget(),
-			color;
+        function updateSelected(evt) {
+            var target = evt.target;
+            if (target.id === 'rgb_r' || target.id === 'rgb_g' || target.id === 'rgb_b') {
+                onChangeRGB();
+            } else if (target.id === 'hsv_h' || target.id === 'hsv_s' || target.id === 'hsv_v') {
+                onChangeHSV();
+            } else if (target.id === 'hex') {
+                cp.setHex(iHex.value);
+            }
+        }
 
-		if ( target.getName() == 'td' && ( color = target.getChild( 0 ).getHtml() ) ) {
-			removeSelected();
+        function clearStatus() {
+            if (backgroundNone) {
+                backgroundNone.removeCls('active');
+            }
+            if (advancedCpContainer) {
+                advancedCpContainer.removeCls('background-none');
+            }
+        }
 
-			selected = target;
-			selected.setAttribute( 'aria-selected', true );
-			selected.addClass( selectedColorCls );
-			dialog.getContentElement( 'picker', 'selectedColor' ).setValue( color );
-		}
-	}
+        function createNewColorTable() {
+            html = [];
+            html.push('<div class="advanced-colorpicker">');
+            html.push('<div class="cke_color_picker_table">');
+            html.push('  <div class="cke_color_selector">');
+            html.push('    <div class="color_picker_container">');
+            html.push('      <div id="color-picker" class="cp cp_normal"></div>');
+            html.push('    </div>');
+            html.push('    <div class="color_display_container">');
+            html.push('      <input class="standard hex" id="hex" type="text" value="">');
+            html.push('      <label class="background-none-label">None</label>');
+            html.push('      <span class="background-none-checker" id="background-none"></span>');
+            html.push('    </div>');
+            html.push('  </div>');
+            html.push('  <div class="cke_color_rgbhsv_selector io pr-new-form">');
+            html.push('    <div class="rgb-container">');
+            html.push('        <div class="cp-field-container">');
+            html.push('            <label>R:</label>');
+            html.push('            <input class="standard" id="rgb_r" type="number" min="0" max="255" value="" />');
+            html.push('        </div>');
+            html.push('        <div class="cp-field-container">');
+            html.push('            <label>G:</label>');
+            html.push('            <input class="standard" id="rgb_g" type="number" min="0" max="255" value="" />');
+            html.push('        </div>');
+            html.push('        <div class="cp-field-container">');
+            html.push('            <label>B:</label>');
+            html.push('            <input class="standard" id="rgb_b" type="number" min="0" max="255" value="" />');
+            html.push('        </div>');
+            html.push('    </div>');
+            html.push('    <div class="hsv-container">');
+            html.push('        <div class="cp-field-container">');
+            html.push('            <label>H:</label>');
+            html.push('            <input class="standard" id="hsv_h" type="text" value="" />');
+            html.push('        </div>');
+            html.push('        <div class="cp-field-container">');
+            html.push('            <label>S:</label>');
+            html.push('            <input class="standard" id="hsv_s" type="text" value="" />');
+            html.push('        </div>');
+            html.push('        <div class="cp-field-container">');
+            html.push('            <label>V:</label>');
+            html.push('            <input class="standard" id="hsv_v" type="text" value="" />');
+            html.push('        </div>');
+            html.push('    </div>');
+            html.push('  </div>');
+            html.push('</div>');
+            html.push('</div>');
+            table = CKEDITOR.dom.element.createFromHtml(html.join(''));
+        }
 
-	function removeSelected() {
-		if ( selected ) {
-			selected.removeClass( selectedColorCls );
-			selected.removeAttribute( 'aria-selected' ); // Attribute aria-selected should also be removed when selection changes.
-			selected = null;
-		}
-	}
+        createNewColorTable();
+        CKEDITOR.document.appendStyleSheet(CKEDITOR.getUrl(CKEDITOR.plugins.get('colordialog').path + 'dialogs/colordialog.css'));
 
-	// Basing black-white decision off of luma scheme using the Rec. 709 version.
-	function isLightColor( color ) {
-		color = color.replace( /^#/, '' );
-		for ( var i = 0, rgb = []; i <= 2; i++ )
-			rgb[ i ] = parseInt( color.substr( i * 2, 2 ), 16 );
-		var luma = ( 0.2126 * rgb[ 0 ] ) + ( 0.7152 * rgb[ 1 ] ) + ( 0.0722 * rgb[ 2 ] );
-		return luma >= 165;
-	}
+        return {
+            title: lang.title,
+            minWidth: 360,
+            minHeight: 260,
+            onLoad: function () {
+                // Update reference.
+                dialog = this;
+            },
+            onHide: function () {
+                clearStatus();
+            },
+            contents: [{
+                id: 'picker',
+                label: lang.title,
+                accessKey: 'I',
+                elements: [{
+                    type: 'hbox',
+                    padding: 0,
+                    widths: ['100%', '0%'],
+                    children: [{
+                            type: 'html',
+                            html: '<div></div>',
+                            onLoad: function () {
+                                CKEDITOR.document.getById(this.domId).append(table);
+                            },
+                            focus: function () {
+                                var type;
+                                var selectedColor = '#2f55cc';
+                                if (dialog.advanced) {
+                                    type = dialog.advanced.type;
+                                    selectedColor = dialog.advanced.selectedColor;
+                                }
+                                iHex = document.querySelector('#hex');
+                                iR = document.querySelector('#rgb_r');
+                                iG = document.querySelector('#rgb_g');
+                                iB = document.querySelector('#rgb_b');
+                                iH = document.querySelector('#hsv_h');
+                                iS = document.querySelector('#hsv_s');
+                                iV = document.querySelector('#hsv_v');
+                                backgroundNone = Ext.select('#background-none');
+                                advancedCpContainer = Ext.select('.advanced-colorpicker');
+                                cp = ColorPicker(document.querySelector('.cp'), updateInputs);
+                                //#rgba(0, 0, 0, 0) is first-selection case
+                                //#transparent is IE
+                                if (selectedColor == '#rgba(0, 0, 0, 0)' || selectedColor == '#transparent') {
+                                    selectedColor = '#000000';
+                                }
+                                // if (selectedColor == '#000000' || selectedColor == '#rgba(0, 0, 0, 0)') {
+                                //     isBackgroundNone = true;
+                                //     cp.setHex('#000000');
+                                //     iHex.value = PR.i18n('phoenix.generic.none');
+                                //     backgroundNone.addCls('active');
+                                //     advancedCpContainer.addCls('background-none');
+                                // } else {
+                                isBackgroundNone = false;
+                                cp.setHex(selectedColor);
+                                // }
+                                _setChangeHandlers();
 
-	// Distinguish focused and hover states.
-	var focused, hovered;
+                                function _setChangeHandlers() {
+                                    if (backgroundNone && backgroundNone.elements && backgroundNone.elements[0]) {
+                                        backgroundNone.elements[0].onclick = function () {
+                                            isBackgroundNone = !isBackgroundNone;
+                                            cp.setHex(ColorPicker.rgb2hex({
+                                                r: 0,
+                                                g: 0,
+                                                b: 0
+                                            }));
+                                            backgroundNone.toggleCls('active');
+                                            advancedCpContainer.toggleCls('background-none');
+                                        };
+                                    }
 
-	// Apply highlight style.
-	function updateHighlight( event ) {
-		// Convert to event.
-		!event.name && ( event = new CKEDITOR.event( event ) );
+                                    iHex.onchange = function () {
+                                        cp.setHex(iHex.value);
+                                    };
+                                    iR.onchange = onChangeRGB;
+                                    iG.onchange = onChangeRGB;
+                                    iB.onchange = onChangeRGB;
+                                    iH.onchange = onChangeHSV;
+                                    iS.onchange = onChangeHSV;
+                                    iV.onchange = onChangeHSV;
 
-		var isFocus = !( /mouse/ ).test( event.name ),
-			target = event.data.getTarget(),
-			color;
-
-		if ( target.getName() == 'td' && ( color = target.getChild( 0 ).getHtml() ) ) {
-			removeHighlight( event );
-
-			isFocus ? focused = target : hovered = target;
-
-			// Apply CSS class to show focus.
-			if ( isFocus ) {
-				target.addClass( isLightColor( color ) ? focusedColorLightCls : focusedColorDarkCls );
-			}
-			setHighlight( color );
-		}
-	}
-
-	function clearHighlight() {
-		if ( focused ) {
-			focused.removeClass( focusedColorLightCls );
-			focused.removeClass( focusedColorDarkCls );
-		}
-		setHighlight( false );
-		focused = null;
-	}
-
-	// Remove previously focused style.
-	function removeHighlight( event ) {
-		var isFocus = !( /mouse/ ).test( event.name ),
-			target = isFocus && focused;
-
-		if ( target ) {
-			target.removeClass( focusedColorLightCls );
-			target.removeClass( focusedColorDarkCls );
-		}
-
-		if ( !( focused || hovered ) ) {
-			setHighlight( false );
-		}
-	}
-
-	function setHighlight( color ) {
-		if ( color ) {
-			$doc.getById( hicolorId ).setStyle( 'background-color', color );
-			$doc.getById( hicolorTextId ).setHtml( color );
-
-		} else {
-			$doc.getById( hicolorId ).removeStyle( 'background-color' );
-			$doc.getById( hicolorTextId ).setHtml( '&nbsp;' );
-		}
-	}
-
-	function onKeyStrokes( evt ) {
-		var domEvt = evt.data;
-
-		var element = domEvt.getTarget();
-		var relative, nodeToMove;
-		var keystroke = domEvt.getKeystroke(),
-			rtl = editor.lang.dir == 'rtl';
-
-		switch ( keystroke ) {
-			// UP-ARROW
-			case 38:
-				// relative is TR
-				if ( ( relative = element.getParent().getPrevious() ) ) {
-					nodeToMove = relative.getChild( [ element.getIndex() ] );
-					nodeToMove.focus();
-				}
-				domEvt.preventDefault();
-				break;
-			// DOWN-ARROW
-			case 40:
-				// relative is TR
-				if ( ( relative = element.getParent().getNext() ) ) {
-					nodeToMove = relative.getChild( [ element.getIndex() ] );
-					if ( nodeToMove && nodeToMove.type == 1 )
-						nodeToMove.focus();
-
-				}
-				domEvt.preventDefault();
-				break;
-
-			// SPACE
-			// ENTER
-			case 32:
-			case 13:
-				updateSelected( evt );
-				domEvt.preventDefault();
-				break;
-
-			// RIGHT-ARROW
-			case rtl ? 37 : 39:
-				// relative is TD
-				if ( ( nodeToMove = element.getNext() ) ) {
-					if ( nodeToMove.type == 1 ) {
-						nodeToMove.focus();
-						domEvt.preventDefault( true );
-					}
-				}
-				// relative is TR
-				else if ( ( relative = element.getParent().getNext() ) ) {
-					nodeToMove = relative.getChild( [ 0 ] );
-					if ( nodeToMove && nodeToMove.type == 1 ) {
-						nodeToMove.focus();
-						domEvt.preventDefault( true );
-					}
-				}
-				break;
-
-			// LEFT-ARROW
-			case rtl ? 39 : 37:
-				// relative is TD
-				if ( ( nodeToMove = element.getPrevious() ) ) {
-					nodeToMove.focus();
-					domEvt.preventDefault( true );
-				}
-				// relative is TR
-				else if ( ( relative = element.getParent().getPrevious() ) ) {
-					nodeToMove = relative.getLast();
-					nodeToMove.focus();
-					domEvt.preventDefault( true );
-				}
-				break;
-			default:
-				// Do not stop not handled events.
-				return;
-		}
-	}
-
-	function createColorTable() {
-		table = CKEDITOR.dom.element.createFromHtml( '<table tabIndex="-1" class="cke_colordialog_table"' +
-			' aria-label="' + lang.options + '" role="grid" style="border-collapse:separate;" cellspacing="0">' +
-			'<caption class="cke_voice_label">' + lang.options + '</caption>' +
-			'<tbody role="presentation"></tbody></table>' );
-
-		table.on( 'mouseover', updateHighlight );
-		table.on( 'mouseout', removeHighlight );
-
-		// Create the base colors array.
-		var aColors = [ '00', '33', '66', '99', 'cc', 'ff' ];
-
-		// This function combines two ranges of three values from the color array into a row.
-		function appendColorRow( rangeA, rangeB ) {
-			for ( var i = rangeA; i < rangeA + 3; i++ ) {
-				var row = new $el( table.$.insertRow( -1 ) );
-				row.setAttribute( 'role', 'row' );
-
-				for ( var j = rangeB; j < rangeB + 3; j++ ) {
-					for ( var n = 0; n < 6; n++ ) {
-						appendColorCell( row.$, '#' + aColors[ j ] + aColors[ n ] + aColors[ i ] );
-					}
-				}
-			}
-		}
-
-		// This function create a single color cell in the color table.
-		function appendColorCell( targetRow, color ) {
-			var cell = new $el( targetRow.insertCell( -1 ) );
-			cell.setAttribute( 'class', 'ColorCell ' + colorCellCls );
-			cell.setAttribute( 'tabIndex', -1 );
-			cell.setAttribute( 'role', 'gridcell' );
-
-			cell.on( 'keydown', onKeyStrokes );
-			cell.on( 'click', updateSelected );
-			cell.on( 'focus', updateHighlight );
-			cell.on( 'blur', removeHighlight );
-
-			cell.setStyle( 'background-color', color );
-
-			var colorLabel = numbering( 'color_table_cell' );
-			cell.setAttribute( 'aria-labelledby', colorLabel );
-			cell.append( CKEDITOR.dom.element.createFromHtml( '<span id="' + colorLabel + '" class="cke_voice_label">' + color + '</span>', CKEDITOR.document ) );
-		}
-
-		appendColorRow( 0, 0 );
-		appendColorRow( 3, 0 );
-		appendColorRow( 0, 3 );
-		appendColorRow( 3, 3 );
-
-		// Create the last row.
-		var oRow = new $el( table.$.insertRow( -1 ) );
-		oRow.setAttribute( 'role', 'row' );
-
-		// Create the gray scale colors cells.
-		appendColorCell( oRow.$, '#000000' );
-		for ( var n = 0; n < 16; n++  ) {
-			var c = n.toString( 16 );
-			appendColorCell( oRow.$, '#' + c + c + c + c + c + c );
-		}
-		appendColorCell( oRow.$, '#ffffff' );
-	}
-
-	createColorTable();
-
-	// Load CSS.
-	CKEDITOR.document.appendStyleSheet( CKEDITOR.getUrl( CKEDITOR.plugins.get( 'colordialog' ).path + 'dialogs/colordialog.css' ) );
-
-	return {
-		title: lang.title,
-		minWidth: 360,
-		minHeight: 220,
-		onLoad: function() {
-			// Update reference.
-			dialog = this;
-		},
-		onHide: function() {
-			clearSelected();
-			clearHighlight();
-		},
-		contents: [ {
-			id: 'picker',
-			label: lang.title,
-			accessKey: 'I',
-			elements: [ {
-				type: 'hbox',
-				padding: 0,
-				widths: [ '70%', '10%', '30%' ],
-				children: [ {
-					type: 'html',
-					html: '<div></div>',
-					onLoad: function() {
-						CKEDITOR.document.getById( this.domId ).append( table );
-					},
-					focus: function() {
-						// Restore the previously focused cell,
-						// otherwise put the initial focus on the first table cell.
-						( focused || this.getElement().getElementsByTag( 'td' ).getItem( 0 ) ).focus();
-					}
-				},
-				spacer,
-				{
-					type: 'vbox',
-					padding: 0,
-					widths: [ '70%', '5%', '25%' ],
-					children: [ {
-						type: 'html',
-						html: '<span>' + lang.highlight + '</span>' +
-							'<div id="' + hicolorId + '" style="border: 1px solid; height: 74px; width: 74px;"></div>' +
-							'<div id="' + hicolorTextId + '">&nbsp;</div><span>' + lang.selected + '</span>' +
-							'<div id="' + selHiColorId + '" style="border: 1px solid; height: 20px; width: 74px;"></div>'
-					},
-					{
-						type: 'text',
-						label: lang.selected,
-						labelStyle: 'display:none',
-						id: 'selectedColor',
-						style: 'width: 76px;margin-top:4px',
-						onChange: function() {
-							// Try to update color preview with new value. If fails, then set it no none.
-							try {
-								$doc.getById( selHiColorId ).setStyle( 'background-color', this.getValue() );
-							} catch ( e ) {
-								clearSelected();
-							}
-						}
-					},
-					spacer,
-					{
-						type: 'button',
-						id: 'clear',
-						label: lang.clear,
-						onClick: clearSelected
-					} ]
-				} ]
-			} ]
-		} ]
-	};
-} );
+                                    iHex.onkeydown = onKeyStrokes;
+                                    iR.onkeydown = onKeyStrokes;
+                                    iG.onkeydown = onKeyStrokes;
+                                    iB.onkeydown = onKeyStrokes;
+                                    iH.onkeydown = onKeyStrokes;
+                                    iS.onkeydown = onKeyStrokes;
+                                    iV.onkeydown = onKeyStrokes;
+                                }
+                            },
+                        },
+                        {
+                            type: 'html',
+                            id: 'selectedColor',
+                            html: '<input type="text" class="color_selected_value">',
+                        }
+                    ]
+                } ]
+            } ]
+        };
+    });
+})();
